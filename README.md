@@ -5,7 +5,7 @@ is result checking software built with php to ease the need of creating a result
 
 checkresult is still in development mode amd you can contribute by comiting changes.
 
-Developed by https://w3techy.com.ng
+Developed by <a href="https://w3techy.com.ng" >W3Techy</a>
 
 Demo: https://w3techy.com.ng/checkresult
 
