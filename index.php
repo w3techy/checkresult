@@ -2,7 +2,8 @@
    require ("config.php");
    session_start();
    
-   if($_SERVER["REQUEST_METHOD"] == "POST") {
+   if($_SERVER["REQUEST_METHOD"] == "POST") 
+    {
       // username and password sent from form 
       
       $myid = mysqli_real_escape_string($conn, $_POST['examno']);
@@ -22,23 +23,21 @@
          
          header("location: result.php");
       }else {
-         $error = "Your Login Name or Password is invalid";
+         $error = "Your Exam Number or Pin is invalid";
       }
-   }
-?>
-   <?php include("header.php"); ?>
-  
-	
+    }
+    include("header.php");
+  ?>
       <div align = "center">
          <div style = "width:300px; border: solid 1px #333333; " align = "left">
             <div style = "background-color:#333333; color:#FFFFFF; padding:10px;"><b>Enter Your Details</b></div>
 				
             <div style = "margin:30px">
                
-               <form action = "" method = "post">
-                  <label>Examno  :</label><input type = "text" name = "examno" class = "box"/><br /><br />
-                  <label>Pin  :</label><input type = "text" name = "pin" class = "box" /><br/><br />
-                  <input type = "submit" value = " Submit " class="button"/><br />
+               <form action = "" method = "post" align="center">
+                  <label for="examno">Exam Number:</label></br><input type = "text" name = "examno" class = "box"/><br /><br />
+                  <label for="pin">Pin:</label></br><input type = "text" name = "pin" class = "box" /><br/><br />
+                  <input type = "submit" value = "Check Result Now!" class="button"/><br />
                </form>
                
                <div style = "font-size:11px; color:#cc0000; margin-top:10px"><?php echo $error; ?></div>
@@ -50,4 +49,6 @@
       </div>
 
    </body>
-<?php include("footer.php"); ?>
+<?php   
+   include("footer.php");
+?>

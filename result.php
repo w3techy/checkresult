@@ -1,14 +1,15 @@
 <?php 
-require ('config.php');
-require ('session.php');
-$sql = "SELECT * FROM mathematics WHERE ID = '$user_check'" ;
-$query = mysqli_query($conn, $sql);
-if (!$query) {
-   die ('SQL Error: ' . mysqli_error($conn));
+  require ('config.php');
+  require ('session.php');
+    $sql = "SELECT * FROM mathematics WHERE ID = '$user_check'" ;
+    $query = mysqli_query($conn, $sql);
+  if (!$query) 
+  {
+    die ('SQL Error: ' . mysqli_error($conn));
   }
   require ('header.php');
 ?>
-<center>
+  <center>
 	<h1>Result</h1>
 	<table class="data-table">
 		<caption class="title">Result of sososo</caption>
@@ -33,8 +34,8 @@ if (!$query) {
       <form>
          <input type="button" value="Print" onclick="window.print()" />
       </form>
+  </center>
 </body>
-</center>
 <?php 
     require('footer.php');
 ?>
