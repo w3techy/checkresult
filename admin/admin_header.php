@@ -7,6 +7,17 @@ if (session_status() == PHP_SESSION_NONE) {
 // Include the main configuration file to get $conn
 require_once('../config.php');
 
+// Attempt to include site_meta.php, if it exists (after installation)
+if (file_exists('../site_meta.php')) {
+    require_once('../site_meta.php');
+}
+
+// Define defaults if constants are not set
+if (!defined('SITE_NAME')) {
+    define('SITE_NAME', 'Result Checker'); // Default if not installed
+}
+// SITE_DESCRIPTION is not directly used in admin header by default, but good practice if needed
+
 // Basic security placeholder - redirect if not admin (future enhancement)
 // if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
 //     header("Location: ../index.php");
@@ -19,7 +30,7 @@ require_once('../config.php');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : "Admin"; ?> - Result Checker</title>
+    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : "Admin"; ?> - <?php echo htmlspecialchars(SITE_NAME); ?> Admin</title>
     <link href="../style.css" rel="stylesheet" type="text/css"/>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }
