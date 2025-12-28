@@ -1,0 +1,14 @@
+{
+    "name": "w3techy/checkresult",
+    "description": "A result checking software built with PHP.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "W3Techy",
+            "homepage": "https://w3techy.com.ng"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
