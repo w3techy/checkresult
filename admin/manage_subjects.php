@@ -19,13 +19,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_subject'])) {
         $stmt = mysqli_prepare($conn, "INSERT INTO subjects (subject_name) VALUES (?)");
         if ($stmt) {
             mysqli_stmt_bind_param($stmt, "s", $subject_name);
-            if (mysqli_stmt_execute($stmt)) {
-                $_SESSION['message'] = 'Subject "' . htmlspecialchars($subject_name) . '" added successfully!';
-            } else {
-                if (mysqli_errno($conn) === 1062) {
+            try {
+                if (mysqli_stmt_execute($stmt)) {
+                    $_SESSION['message'] = 'Subject "' . htmlspecialchars($subject_name) . '" added successfully!';
+                }
+            } catch (mysqli_sql_exception $e) {
+                if ($e->getCode() === 1062 || mysqli_stmt_errno($stmt) === 1062) {
                     $_SESSION['error_message'] = 'Error: Subject "' . htmlspecialchars($subject_name) . '" already exists.';
                 } else {
-                    error_log("Failed to insert subject: " . mysqli_error($conn));
+                    error_log("Failed to insert subject: " . $e->getMessage());
                     $_SESSION['error_message'] = "Database error while adding subject.";
                 }
             }
@@ -44,15 +46,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_subject'])) {
 $subjects = [];
 $error_message = '';
 
-$sql_select = "SELECT subject_id, subject_name FROM subjects ORDER BY subject_name ASC";
-$result_select = mysqli_query($conn, $sql_select);
+try {
+    $sql_select = "SELECT subject_id, subject_name FROM subjects ORDER BY subject_name ASC";
+    $result_select = mysqli_query($conn, $sql_select);
 
-if ($result_select) {
-    while ($row = mysqli_fetch_assoc($result_select)) {
-        $subjects[] = $row;
+    if ($result_select) {
+        while ($row = mysqli_fetch_assoc($result_select)) {
+            $subjects[] = $row;
+        }
     }
-} else {
-    error_log("Error fetching subjects: " . mysqli_error($conn));
+} catch (mysqli_sql_exception $e) {
+    error_log("Error fetching subjects: " . $e->getMessage());
     $error_message = "Unable to load subjects list at this time.";
 }
 ?>
