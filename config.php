@@ -1,10 +1,14 @@
 <?php
-$db_host = 'localhost'; // Server Name
-$db_user = 'root'; // Username
-$db_pass = ''; // Password
-$db_name = 'result'; // Database Name
+// Database Configuration
+$db_host = 'localhost';
+$db_user = 'root';
+$db_pass = '';
+$db_name = 'result';
 
 $conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 if (!$conn) {
-	die ('Failed to connect to MySQL: ' . mysqli_connect_error());	
+    error_log('Database connection error: ' . mysqli_connect_error());
+    die('Database connection error. Please verify your configuration in config.php.');
 }
+
+mysqli_set_charset($conn, 'utf8mb4');

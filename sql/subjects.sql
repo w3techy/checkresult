@@ -1,25 +1,6 @@
--- phpMyAdmin SQL Dump
--- Generation Time: [Current Date/Time or original if preferred, though this is a new file]
--- Server version: 5.1.62 (Example, can be updated)
--- PHP Version: 5.5.9 (Example, can be updated)
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
---
--- Database: `result`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `subjects`
---
+-- Result Checker Database Schema: subjects
+-- Engine: InnoDB
+-- Charset: utf8mb4
 
 DROP TABLE IF EXISTS `subjects`;
 CREATE TABLE IF NOT EXISTS `subjects` (
@@ -27,12 +8,9 @@ CREATE TABLE IF NOT EXISTS `subjects` (
   `subject_name` varchar(100) NOT NULL,
   PRIMARY KEY (`subject_id`),
   UNIQUE KEY `subject_name` (`subject_name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1;
 
---
--- Dumping data for table `subjects`
---
-
+-- Default Subjects
 INSERT INTO `subjects` (`subject_name`) VALUES
 ('English Language'),
 ('Mathematics'),
@@ -40,7 +18,3 @@ INSERT INTO `subjects` (`subject_name`) VALUES
 ('Commerce'),
 ('Physics'),
 ('Biology');
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

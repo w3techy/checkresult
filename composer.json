@@ -1,0 +1,33 @@
+{
+    "name": "w3techy/checkresult",
+    "description": "A PHP-based software designed to allow students to check their academic results online.",
+    "type": "project",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "W3Techy",
+            "homepage": "https://w3techy.com.ng"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-mysqli": "*"
+    },
+    "scripts": {
+        "lint": [
+            "@php -l index.php",
+            "@php -l result.php",
+            "@php -l session.php",
+            "@php -l logout.php",
+            "@php -l header.php",
+            "@php -l footer.php",
+            "@php -l install.php",
+            "@php -l admin/admin_header.php",
+            "@php -l admin/admin_footer.php",
+            "@php -l admin/index.php",
+            "@php -l admin/login.php",
+            "@php -l admin/logout.php",
+            "@php -l admin/manage_subjects.php"
+        ]
+    }
+}

@@ -1,0 +1,13 @@
+# Environment & generated configuration
+site_meta.php
+install.lock
+
+# Composer
+/vendor/
+
+# System and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log

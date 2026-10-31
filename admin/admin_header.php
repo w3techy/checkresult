@@ -1,29 +1,34 @@
 <?php
-// Start session if not already started
-if (session_status() == PHP_SESSION_NONE) {
+if (session_status() === PHP_SESSION_NONE) {
+    if (!headers_sent()) {
+        ini_set('session.cookie_httponly', 1);
+        ini_set('session.use_only_cookies', 1);
+    }
     session_start();
 }
 
-// Include the main configuration file to get $conn
-require_once('../config.php');
-
-// Attempt to include site_meta.php, if it exists (after installation)
-if (file_exists('../site_meta.php')) {
-    require_once('../site_meta.php');
+// Strict Admin Authentication Check
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+    header("Location: login.php");
+    exit();
 }
 
-// Define defaults if constants are not set
+// Include configuration and database connection
+require_once(__DIR__ . '/../config.php');
+
+// Include site metadata if available
+if (file_exists(__DIR__ . '/../site_meta.php')) {
+    require_once(__DIR__ . '/../site_meta.php');
+}
+
 if (!defined('SITE_NAME')) {
-    define('SITE_NAME', 'Result Checker'); // Default if not installed
+    define('SITE_NAME', 'Result Checker');
 }
-// SITE_DESCRIPTION is not directly used in admin header by default, but good practice if needed
 
-// Basic security placeholder - redirect if not admin (future enhancement)
-// if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
-//     header("Location: ../index.php");
-//     exit();
-// }
-
+// CSRF token generation for admin forms
+if (empty($_SESSION['admin_csrf_token'])) {
+    $_SESSION['admin_csrf_token'] = bin2hex(random_bytes(32));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,50 +38,53 @@ if (!defined('SITE_NAME')) {
     <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : "Admin"; ?> - <?php echo htmlspecialchars(SITE_NAME); ?> Admin</title>
     <link href="../style.css" rel="stylesheet" type="text/css"/>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }
-        .admin-container { max-width: 960px; margin: 20px auto; padding: 20px; background-color: #fff; border: 1px solid #ddd; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .admin-nav { background-color: #333; color: #fff; padding: 10px 0; margin-bottom: 20px;}
-        .admin-nav ul { list-style-type: none; padding: 0; margin: 0 auto; text-align: center; max-width: 960px;}
-        .admin-nav ul li { display: inline; margin-right: 20px; }
-        .admin-nav ul li a { color: #fff; text-decoration: none; font-weight: bold; }
-        .admin-nav ul li a:hover { text-decoration: underline; }
-        h1, h2, h3 { color: #333; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; color: #333; }
+        .admin-nav { background-color: #212529; color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .admin-nav .brand { font-size: 1.15rem; font-weight: bold; color: #fff; text-decoration: none; }
+        .admin-nav ul { list-style: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 20px; }
+        .admin-nav ul li { display: inline; }
+        .admin-nav ul li a { color: #dee2e6; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .admin-nav ul li a:hover { color: #fff; text-decoration: none; }
+        .admin-nav ul li .user-badge { color: #ffc107; font-size: 13px; margin-right: 8px; }
+        .admin-container { max-width: 1000px; margin: 30px auto; padding: 25px 30px; background-color: #fff; border: 1px solid #e1e4e8; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        h1, h2, h3 { color: #212529; margin-top: 0; }
         table.data-table { width: 100%; margin-top: 20px; border-collapse: collapse; }
-        table.data-table th, table.data-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        table.data-table th { background-color: #f0f0f0; }
-        .message { padding: 10px; margin-bottom: 15px; border-radius: 4px; }
-        .message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input[type="text"], .form-group input[type="password"], .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .button, input[type="submit"] { background-color: #5cb85c; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
-        .button:hover, input[type="submit"]:hover { background-color: #4cae4c; }
-        /* Style for the main site's .button if needed */
-        .button.main-site-style { background-color:#333333; color:#FFFFFF; padding:10px; text-decoration: none;}
+        table.data-table th, table.data-table td { border: 1px solid #dee2e6; padding: 12px 14px; text-align: left; }
+        table.data-table th { background-color: #f8f9fa; font-weight: 600; color: #495057; }
+        .message { padding: 12px 16px; margin-bottom: 20px; border-radius: 4px; font-size: 14px; }
+        .message.success { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+        .message.error { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #495057; }
+        .form-group input[type="text"], .form-group input[type="password"] { width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        .btn-submit { background-color: #198754; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600; }
+        .btn-submit:hover { background-color: #157347; }
+        .nav-logout { background-color: #dc3545; color: #fff !important; padding: 6px 14px; border-radius: 4px; }
+        .nav-logout:hover { background-color: #bb2d3b; }
     </style>
 </head>
 <body>
 
 <div class="admin-nav">
+    <a href="index.php" class="brand"><?php echo htmlspecialchars(SITE_NAME); ?> Admin</a>
     <ul>
-        <li><a href="index.php">Admin Dashboard</a></li>
+        <li><span class="user-badge">User: <?php echo htmlspecialchars($_SESSION['admin_user'] ?? 'Admin'); ?></span></li>
+        <li><a href="index.php">Dashboard</a></li>
         <li><a href="manage_subjects.php">Manage Subjects</a></li>
-        <li><a href="../index.php" target="_blank">View Main Site</a></li>
-        <!-- Add other admin navigation links here -->
+        <li><a href="../index.php" target="_blank">Student Portal &rarr;</a></li>
+        <li><a href="logout.php" class="nav-logout">Logout</a></li>
     </ul>
 </div>
 
 <div class="admin-container">
-<!-- Main content of admin pages will go here -->
 <?php
-// Display flash messages (success/error)
+// Display flash messages
 if (isset($_SESSION['message'])) {
     echo '<div class="message success">' . htmlspecialchars($_SESSION['message']) . '</div>';
-    unset($_SESSION['message']); // Clear the message after displaying
+    unset($_SESSION['message']);
 }
-if (isset($_SESSION['error_message'])) { // Changed from 'error' to 'error_message' to avoid conflict if 'error' is used differently
+if (isset($_SESSION['error_message'])) {
     echo '<div class="message error">' . htmlspecialchars($_SESSION['error_message']) . '</div>';
-    unset($_SESSION['error_message']); // Clear the error message after displaying
+    unset($_SESSION['error_message']);
 }
 ?>
